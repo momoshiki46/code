@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Politeknik CGPA Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: #f1f5f9;
+      color: #1e293b;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h2, h3 {
+      color: #0f172a;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 10px;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      margin: 5px 0 15px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+    }
+
+    .subject {
+      background: #f8fafc;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 4px solid #3b82f6;
+      border-radius: 8px;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-right: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.2s ease-in-out;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    #results {
+      background: #e0f2fe;
+      border-left: 4px solid #0ea5e9;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>🎓 Politeknik CGPA Calculator</h2>
+
+    <label>📘 Previous CGPA:</label>
+    <input type="number" id="prevCgpa" step="0.01" required>
+
+    <label>📘 Total Previous Credits:</label>
+    <input type="number" id="prevCredits" required>
+
+    <hr>
+
+    <h3>📚 Subjects This Semester</h3>
+    <div id="subjects"></div>
+
+    <button onclick="addSubject()">+ Add Subject</button>
+    <button onclick="calculateCGPA()">Calculate CGPA</button>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    const gradePoints = {
+      "A": 4.00,
+      "A-": 3.67,
+      "B+": 3.33,
+      "B": 3.00,
+      "B-": 2.67,
+      "C+": 2.33,
+      "C": 2.00,
+      "D": 1.00,
+      "F": 0.00
+    };
+
+    function addSubject() {
+      const container = document.getElementById('subjects');
+      const div = document.createElement('div');
+      div.className = 'subject';
+      div.innerHTML = `
+        <label>📖 Course Name: <input type="text" required></label>
+        <label>⏱️ Credit Hour: <input type="number" step="0.5" required></label>
+        <label>🎯 Grade:
+          <select>
+            <option>A</option><option>A-</option><option>B+</option>
+            <option>B</option><option>B-</option><option>C+</option>
+            <option>C</option><option>D</option><option>F</option>
+          </select>
+        </label>
+      `;
+      container.appendChild(div);
+    }
+
+    function calculateCGPA() {
+      const prevCgpa = parseFloat(document.getElementById("prevCgpa").value);
+      const prevCredits = parseFloat(document.getElementById("prevCredits").value);
+      const subjects = document.querySelectorAll(".subject");
+
+      let totalPoints = 0;
+      let currentCredits = 0;
+
+      subjects.forEach(subject => {
+        const inputs = subject.querySelectorAll("input");
+        const grade = subject.querySelector("select").value;
+        const credit = parseFloat(inputs[1].value);
+
+        const point = gradePoints[grade];
+        totalPoints += point * credit;
+        currentCredits += credit;
+      });
+
+      const currentGpa = totalPoints / currentCredits;
+      const totalAllCredits = prevCredits + currentCredits;
+      const newCgpa = ((prevCgpa * prevCredits) + (currentGpa * currentCredits)) / totalAllCredits;
+
+      document.getElementById("results").innerHTML = `
+        <h3>📈 Results</h3>
+        <p>🎓 <strong>Current GPA:</strong> ${currentGpa.toFixed(2)}</p>
+        <p>📦 <strong>Total Credits:</strong> ${totalAllCredits}</p>
+        <p>🏅 <strong>Updated CGPA:</strong> ${newCgpa.toFixed(2)}</p>
+      `;
+    }
+
+    // Auto add 3 subjects
+    for (let i = 0; i < 3; i++) addSubject();
+  </script>
+
+</body>
+</html>
